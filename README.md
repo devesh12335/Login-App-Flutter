@@ -7,7 +7,7 @@ A new Flutter project.
 Gradle Version - 7.5
 Not any Special configuration is required to run the app,but if you to compile with your android studio
 or Vs Code there may be issue of SHA-1 Keys(as your pc and key.jks is different)
- i have attached apk files with currrent project
+ i have attached apk files with currrent project,check the main branch
 
 This project is a starting point for a Flutter application.
 
