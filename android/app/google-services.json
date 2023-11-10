@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "282914334741",
+    "project_id": "login-app-69d3f",
+    "storage_bucket": "login-app-69d3f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:282914334741:android:f43bcf41aee17f7a8f461c",
+        "android_client_info": {
+          "package_name": "com.devesh.login_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "282914334741-esc5dg1ghcdulf8k5k33os05p1h7m8et.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.devesh.login_app",
+            "certificate_hash": "15d9e78639c305a96d7c9ee156e8923efb4c7bb7"
+          }
+        },
+        {
+          "client_id": "282914334741-3fuqltrp2019vv0ssali3c7ifrm8vif7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDq3pomqhCd_qrepoLOfoaX7bmapMB8gP8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "282914334741-3fuqltrp2019vv0ssali3c7ifrm8vif7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
