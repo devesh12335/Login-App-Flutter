@@ -15,7 +15,7 @@ class Auth{
 
   GoogleSignIn _googleSignIn = GoogleSignIn();
    static GoogleSignInAccount? gUser;
-  signInWithGoogle() async {
+  Future<UserCredential?> signInWithGoogle() async {
      gUser = await _googleSignIn.signIn();
 
     final GoogleSignInAuthentication gAuth  = await gUser!.authentication;

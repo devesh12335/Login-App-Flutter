@@ -18,15 +18,15 @@ class LoginScreenView extends StatefulWidget {
 
 class _LoginScreenViewState extends State<LoginScreenView> {
 
-  Future<String> signInWithGoogle() async {
-    try {
-      await Auth().signInWithGoogle();
-      return "Successful";
-    } on FirebaseAuthException catch (error) {
-      print("Fire Base Problem :- ${error.message}");
-      return "${error.message}";
-    }
-  }
+  // Future<String> signInWithGoogle() async {
+  //   try {
+  //     await Auth().signInWithGoogle();
+  //     return "Successful";
+  //   } on FirebaseAuthException catch (error) {
+  //     print("Fire Base Problem :- ${error.message}");
+  //     return "${error.message}";
+  //   }
+  // }
 
   @override
   void initState() {
@@ -56,47 +56,7 @@ class _LoginScreenViewState extends State<LoginScreenView> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
           ElevatedButton(onPressed: (){
-            signInWithGoogle().then((value) async {
-              UserModel? existingUser = await FireUser().getCurrentUser();
-              if(value != null){
-
-                if(existingUser == null){
-                  UserModel userData = UserModel(
-                      userName: Auth().currentUser!.displayName,
-                      email:Auth().currentUser!.email,
-                      profileImage:Auth().currentUser!.photoURL,
-
-                  );
-                  FireUser fireStoreData= FireUser();
-                  fireStoreData.addUser(userModel: userData);
-
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  await prefs.setString("email", userData.email!);
-                  await prefs.setString("name", userData.userName!);
-                  await prefs.setString("imageUrl", userData.profileImage!);
-
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=>HomescreenView()));
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Welcome ${Auth().currentUser!.email}")));
-                }else{
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  await prefs.setString("email", existingUser.email!);
-                  await prefs.setString("name", existingUser.userName!);
-                  await prefs.setString("imageUrl", existingUser.profileImage!);
-
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=>HomescreenView()));
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Welcome ${existingUser.email}")));
-                }
-                if (Auth().currentUser != null) {
-                  MySingleton.loggedInUser = await FireUser().getCurrentUser();
-                } else {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login Failed")));
-                }
-
-              }else{
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login Failed")));
-              }
-
-            });
+            loginGoogle(context);
           }, child: const Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -109,52 +69,7 @@ class _LoginScreenViewState extends State<LoginScreenView> {
 
             //Facebook Login
             ElevatedButton(onPressed: () async {
-             UserCredential? user = await Auth().signInWithFacebook();
-             if(user != null){
-
-               print(user!.additionalUserInfo!.profile!);
-               Map<String,dynamic> jsonData = user!.additionalUserInfo!.profile!;
-               String pictureUrl = jsonData["picture"]["data"]["url"]; //***
-               String name = jsonData["name"]; //***
-               String email = jsonData["email"]; //***
-               UserModel userModel = UserModel(userName: name,profileImage: pictureUrl,email: email);
-
-               SharedPreferences prefs = await SharedPreferences.getInstance();
-               await prefs.setString("email", userModel.email!);
-               await prefs.setString("name", userModel.userName!);
-               await prefs.setString("imageUrl", userModel.profileImage!);
-
-               UserModel? existingUser = await FireUser().getCurrentUser();
-               if(existingUser == null){
-                  //Adding User Data
-                 FireUser fireStoreData= FireUser();
-                 fireStoreData.addUser(userModel: userModel);
-                  //Saving data local
-
-
-                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>HomescreenView()));
-                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Welcome ${Auth().currentUser!.email}")));
-               }else{
-                 SharedPreferences prefs = await SharedPreferences.getInstance();
-                 await prefs.setString("email", existingUser.email!);
-                 await prefs.setString("name", existingUser.userName!);
-                 await prefs.setString("imageUrl", existingUser.profileImage!);
-                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>HomescreenView()));
-                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Welcome ${existingUser.email}")));
-               }
-               if (Auth().currentUser != null) {
-                 MySingleton.loggedInUser = await FireUser().getCurrentUser();
-               } else {
-                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login Failed")));
-               }
-
-               print(" Image Url : $pictureUrl");
-               print(" User Name : $name");
-               print(" Email : $email");
-
-             }else{
-               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User Not Found")));
-             }
+             await loginFacebook(context);
 
             }, child: const Row(
               mainAxisSize: MainAxisSize.min,
@@ -165,5 +80,110 @@ class _LoginScreenViewState extends State<LoginScreenView> {
             )),
       ]
     )));
+  }
+
+  Future<void> loginFacebook(BuildContext context) async {
+    UserCredential? user = await Auth().signInWithFacebook();
+    if(user != null){
+
+      print(user!.additionalUserInfo!.profile!);
+      Map<String,dynamic> jsonData = user!.additionalUserInfo!.profile!;
+      String pictureUrl = jsonData["picture"]["data"]["url"]; //***
+      String name = jsonData["name"]; //***
+      String email = jsonData["email"]; //***
+      UserModel userModel = UserModel(userName: name,profileImage: pictureUrl,email: email);
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString("email", userModel.email!);
+      await prefs.setString("name", userModel.userName!);
+      await prefs.setString("imageUrl", userModel.profileImage!);
+
+      UserModel? existingUser = await FireUser().getCurrentUser();
+      if(existingUser == null){
+         //Adding User Data
+        FireUser fireStoreData= FireUser();
+        fireStoreData.addUser(userModel: userModel);
+         //Saving data local
+
+
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>HomescreenView()));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Welcome ${Auth().currentUser!.email}")));
+      }else{
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString("email", existingUser.email!);
+        await prefs.setString("name", existingUser.userName!);
+        await prefs.setString("imageUrl", existingUser.profileImage!);
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>HomescreenView()));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Welcome ${existingUser.email}")));
+      }
+      if (Auth().currentUser != null) {
+        MySingleton.loggedInUser = await FireUser().getCurrentUser();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login Failed")));
+      }
+
+      // print(" Image Url : $pictureUrl");
+      // print(" User Name : $name");
+      // print(" Email : $email");
+
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User Not Found")));
+    }
+  }
+
+  void loginGoogle(BuildContext context) {
+    Auth().signInWithGoogle().then((user) async {
+
+      if(user != null){
+
+        print(user!.additionalUserInfo!.profile!);
+
+        Map<String,dynamic> jsonData = user!.additionalUserInfo!.profile!;
+        String pictureUrl = jsonData["picture"]; //***
+        String name = jsonData["name"]; //***
+        String email = jsonData["email"]; //***
+
+        // print(" Image Url : $pictureUrl");
+        // print(" User Name : $name");
+        // print(" Email : $email");
+
+        UserModel userModel = UserModel(userName: name,profileImage: pictureUrl,email: email);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString("email", userModel.email!);
+        await prefs.setString("name", userModel.userName!);
+        await prefs.setString("imageUrl", userModel.profileImage!);
+        UserModel? existingUser = await FireUser().getCurrentUser();
+        if(existingUser == null){
+          // UserModel userData = UserModel(
+          //     userName: Auth().currentUser!.displayName,
+          //     email:Auth().currentUser!.email,
+          //     profileImage:Auth().currentUser!.photoURL,
+          //
+          // );
+          FireUser fireStoreData= FireUser();
+          fireStoreData.addUser(userModel: userModel);
+
+          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>HomescreenView()));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Welcome ${Auth().currentUser!.email}")));
+        }else{
+          // SharedPreferences prefs = await SharedPreferences.getInstance();
+          // await prefs.setString("email", existingUser.email!);
+          // await prefs.setString("name", existingUser.userName!);
+          // await prefs.setString("imageUrl", existingUser.profileImage!);
+
+          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>HomescreenView()));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Welcome ${existingUser.email}")));
+        }
+        if (Auth().currentUser != null) {
+          MySingleton.loggedInUser = await FireUser().getCurrentUser();
+        } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login Failed")));
+        }
+
+      }else{
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login Failed")));
+      }
+
+    });
   }
 }

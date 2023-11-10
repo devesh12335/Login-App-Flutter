@@ -61,6 +61,7 @@ class FireUser{
     try{
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? email =   prefs.getString("email") ?? "" ;
+      // String? email =  Auth().currentUser!.email ?? "" ;
       final snapshot = await firestore.collection('users').where("email",isEqualTo: email).get();
       final userData = snapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList();
       print("${userData}");
